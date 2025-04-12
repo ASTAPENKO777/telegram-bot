@@ -5,20 +5,16 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 user_states = {}
 user_languages = {}
 
-# Функція для команди /start
 async def start(update: Update, context):
     user_id = update.message.from_user.id
-    # Перевірка, чи це перший запуск для користувача
     if user_id not in user_states:
         user_states[user_id] = "menu"  
         user_languages[user_id] = "uk" 
     await show_main_menu(update)
 
-# Функція для показу головного меню
 async def show_main_menu(update: Update):
     user_id = update.message.from_user.id
     lang = user_languages.get(user_id, "uk")
-    # Меню відповідно до мови
     if lang == "uk":
         keyboard = [
             ["📋 Прайс-лист", "📞 Контакти"],
@@ -36,7 +32,6 @@ async def show_main_menu(update: Update):
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(message, reply_markup=reply_markup)
 
-# Функція для показу кнопок соцмереж
 async def show_social_media(update: Update):
     user_id = update.message.from_user.id
     lang = user_languages.get(user_id, "uk")
@@ -47,7 +42,6 @@ async def show_social_media(update: Update):
         "🌐 We are on social media:\n\n"
         "Follow our pages on social media!"
     )
-    # Створення клавіатури з посиланнями
     keyboard = [
         [
             InlineKeyboardButton("YouTube", url="https://youtube.com/@python_hub7777?si=aDDw15WAiXwKVaCv"),
@@ -55,14 +49,11 @@ async def show_social_media(update: Update):
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    # Відправка повідомлення з клавіатурою
     await update.message.reply_text(message, reply_markup=reply_markup)
 
-# Функція для зміни мови
 async def change_language(update: Update):
     user_id = update.message.from_user.id
     lang = user_languages.get(user_id, "uk")
-    # Відображення вибору мови
     keyboard = [
         ["Українська", "English"]
     ]
@@ -73,19 +64,15 @@ async def change_language(update: Update):
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(message, reply_markup=reply_markup)
 
-# Функція для обробки текстових повідомлень
 async def handle_message(update: Update, context):
     user_id = update.message.from_user.id
     text = update.message.text.strip().lower()
     lang = user_languages.get(user_id, "uk")
-    # Логування тексту для діагностики
     print(f"Отримано повідомлення від користувача: {text}")
-    # Перевірка вибору мови
     if text in ["українська", "english"]:
         user_languages[user_id] = "uk" if text == "українська" else "en"
         await show_main_menu(update)
         return
-    # Обробка вибору меню
     if text in ["📋 прайс-лист", "📋 price list"]:
         response = (
             "📋 **Прайс-лист:**\n\n"
@@ -141,7 +128,6 @@ async def handle_message(update: Update, context):
     elif text == "↩️ назад":
         await show_main_menu(update)
         return
-    # Випадок, коли введення не розпізнане
     response = "Невідомий вибір. Спробуйте ще раз." if lang == "uk" else "Unknown choice. Please try again."
     await update.message.reply_text(response, parse_mode='Markdown')
 
